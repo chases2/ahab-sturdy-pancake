@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ahab-publisher
+  namespace: ahab 
+spec:
+  selector:
+    matchLabels:
+      app: ahab-publisher
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ahab-publisher
+    spec:
+      serviceAccountName: ahab-publisher
+      containers:
+        - name: ahab-publisher
+          image: gcr.io/slchase-canary/ahab-publisher
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "1000Mi"
+          livenessProbe:
+            initialDelaySeconds: 60 
+            failureThreshold: 6
+            periodSeconds: 10
+            timeoutSeconds: 5
+            httpGet:
+              port: 8081
+              path: /actuator/health/liveness
+          readinessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              port: 8081
+              path: /actuator/health/readiness
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: development

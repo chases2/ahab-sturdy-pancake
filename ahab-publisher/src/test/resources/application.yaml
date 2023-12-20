@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ahab-publisher
+
+#Actuator endpoints
+management:
+  health:
+    enabled: false
+    pubsub:
+      enabled: false
+  server:
+    port: 1234
