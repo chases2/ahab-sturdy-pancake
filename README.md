@@ -21,13 +21,11 @@ You will need:
 - A project to put all this in. My example is `slchase-canary`, which you will need to replace.
 - A kubernetes cluster to put all these workloads in
 - A topic, "ahab"
-- Two to Four subscriptions:
+- Two subscriptions:
   - "ahab.stream-1" is a default subscription with default settings.
   - "ahab.once-stream-1" is a subscription with "Exactly once delivery" enabled. Other settings are default
     - Note: by default, the "Ack Deadline" is increased from 10s -> 60s when enable exactly-once delivery.
-
-Note: Other subscriptions are used for the variants in this repo; ex: "ahab.stream-21" and "ahab.once-stream-21"
-for the Java 21 variant. This allows you to run them in parallel and compare.
+  - Other subscriptions are used for the variants in this repo; ex: "ahab.stream-21" and "ahab.once-stream-21" for the Java 21 variant. This lets you to run them in parallel and compare.
 
 Then, you should be able to deploy the publisher by running "skaffold run" in the "ahab-publisher" directory.
 This publisher exists to publish messages; it is not part of the queue setup.
