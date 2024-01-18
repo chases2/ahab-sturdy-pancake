@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ahab-stream-21
+  namespace: ahab 
+spec:
+  selector:
+    matchLabels:
+      app: ahab-stream-21
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ahab-stream-21
+    spec:
+      # Uses same permission account for entire experiment
+      serviceAccountName: ahab-publisher
+      containers:
+        - name: ahab-stream-21
+          image: gcr.io/slchase-canary/ahab-streaming-subscriber-21
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "1000Mi"
+          livenessProbe:
+            initialDelaySeconds: 60 
+            failureThreshold: 6
+            periodSeconds: 10
+            timeoutSeconds: 5
+            httpGet:
+              port: 8081
+              path: /actuator/health/liveness
+          readinessProbe:
+            initialDelaySeconds: 60
+            httpGet:
+              port: 8081
+              path: /actuator/health/readiness
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: development
+            - name: AHAB_SUBSCRIPTION
+              value: ahab.stream-21

@@ -4,8 +4,11 @@ If you boot a PubSub consumer under these circumstances...
 
 - There are a lot of messages already on the queue
 - "Exactly Once" delivery is enabled
+- Your Spring Cloud GCP version is <5.0.0
 
 ... then the consumer will fail to consume with no errors, potentially for hours.
+
+REFERENCE ISSUE: https://github.com/GoogleCloudPlatform/spring-cloud-gcp/issues/2491
 
 ## Instructions to Recreate
 
@@ -18,10 +21,13 @@ You will need:
 - A project to put all this in. My example is `slchase-canary`, which you will need to replace.
 - A kubernetes cluster to put all these workloads in
 - A topic, "ahab"
-- Two subscriptions:
+- Two to Four subscriptions:
   - "ahab.stream-1" is a default subscription with default settings.
   - "ahab.once-stream-1" is a subscription with "Exactly once delivery" enabled. Other settings are default
     - Note: by default, the "Ack Deadline" is increased from 10s -> 60s when enable exactly-once delivery.
+
+Note: Other subscriptions are used for the variants in this repo; ex: "ahab.stream-21" and "ahab.once-stream-21"
+for the Java 21 variant. This allows you to run them in parallel and compare.
 
 Then, you should be able to deploy the publisher by running "skaffold run" in the "ahab-publisher" directory.
 This publisher exists to publish messages; it is not part of the queue setup.
@@ -56,6 +62,7 @@ deploy two copies of the same binary, each subscribed to one of the subscription
 
 ## Known Resolutions
 
+- Update your Spring Cloud GCP version to 5.0.0 or later. This project demonstrates that the error doesn't occur at this version.
+- Remove "Exactly Once" delivery. This project demonstrates that the error doesn't occur if "Exactly Once" delivery is disabled.
+- Use a Polling Subscripton base. Example code is in "polling-subscription"
 - Restarting the service often fixes the issue. Configure health checks to reboot your service if the queue climbs regularly.
-
-- As demonstrated here, the error doesn't seem to occur if "Exactly Once" delivery is disabled. 

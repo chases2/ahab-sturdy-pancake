@@ -1,0 +1,26 @@
+apiVersion: skaffold/v4beta2
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/slchase-canary/ahab-polling-subscriber
+    jib:
+      args:
+      - -DskipTests
+manifests:
+  rawYaml:
+  - k8s/*
+deploy:
+  kubectl: {}
+profiles:
+- name: dev
+  build:
+    artifacts:
+    - image: gcr.io/slchase-canary/ahab-polling-subscriber
+      jib: {}
+    tagPolicy:
+      sha256: {}
+  manifests:
+    rawYaml:
+    - k8s/*
+  deploy:
+    kubectl: {}
